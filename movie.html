@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NixFlix - Movie</title>
+  <style>
+    body {
+      background: #141414;
+      color: #fff;
+      font-family: 'Helvetica Neue', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #111;
+      color: #e50914;
+      font-size: 28px;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    button {
+      background-color: #e50914;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 14px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+      margin-bottom: 20px;
+      border-radius: 10px;
+    }
+
+    .recommendations {
+      padding: 20px;
+    }
+
+    .rec-list {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+    }
+
+    .rec-item {
+      flex: 0 0 auto;
+      width: 160px;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .rec-item img {
+      width: 100%;
+      border-radius: 4px;
+      height: 240px;
+      object-fit: cover;
+    }
+
+    .rec-title {
+      margin-top: 8px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    NixFlix
+    <button onclick="goBack()">← Back to Home</button>
+  </header>
+
+  <iframe id="movieIframe" allowfullscreen></iframe>
+
+  <div class="recommendations">
+    <h2>Recommended Movies</h2>
+    <div class="rec-list" id="recList"></div>
+  </div>
+
+  <script>
+    const movieId = new URLSearchParams(window.location.search).get('id');
+    const apiKey = '93843c8c295f5655a75d6361487e911a';
+
+    document.getElementById('movieIframe').src = `https://vidsrc.su/embed/movie/${movieId}`;
+
+    function goBack() {
+      window.location.href = 'index.html';
+    }
+
+    // Load recommendations
+    fetch(`https://api.themoviedb.org/3/movie/${movieId}/recommendations?api_key=${apiKey}`)
+      .then(res => res.json())
+      .then(data => {
+        const recList = document.getElementById('recList');
+        data.results.slice(0, 10).forEach(movie => {
+          const poster = movie.poster_path
+            ? `https://image.tmdb.org/t/p/w200${movie.poster_path}`
+            : 'https://via.placeholder.com/200x300?text=No+Image';
+
+          const div = document.createElement('div');
+          div.className = 'rec-item';
+          div.innerHTML = `
+            <img src="${poster}" alt="${movie.title}">
+            <div class="rec-title">${movie.title}</div>
+          `;
+          div.onclick = () => {
+            window.location.href = `movie.html?id=${movie.id}`;
+          };
+          recList.appendChild(div);
+        });
+      });
+  </script>
+</body>
+</html>

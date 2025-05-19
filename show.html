@@ -118,7 +118,7 @@ function loadSeasons() {
 
 function loadEpisodes() {
   const season = document.getElementById('seasonSelect').value;
-  fetch(`https://api.themoviedb.org/3/tv/${showId}/season/${season}?api_key=${apiKey}`)
+  fetch(`https://vidsrc.wtf/api/1/tv/?id={tmdb_id}&s={season_number}&e={episode_number}&color={hexcolor}`)
     .then(res => res.json())
     .then(data => {
       currentEpisodeList = data.episodes;
@@ -150,7 +150,7 @@ function loadEpisodes() {
 function playEpisode(episodeNumber, season) {
   const iframe = document.getElementById('videoPlayer');
   const errorMessage = document.getElementById('errorMessage');
-  iframe.src = `https://vidsrc.su/embed/tv/${showId}/${season}/${episodeNumber}`;
+  iframe.src = `https://vidsrc.wtf/api/1/tv/?id={tmdb_id}&s={season_number}&e={episode_number}&color={hexcolor}`;
   iframe.style.display = 'block';
   errorMessage.style.display = 'none';
 

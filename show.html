@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Watch Series - NixFlix</title>
   <style>
-    /* [All your existing CSS here — unchanged] */
     body { margin: 0; background-color: #000; color: white; font-family: Arial, sans-serif; }
     header { background-color: #111; padding: 20px; font-size: 24px; font-weight: bold; display: flex; align-items: center; }
     header span { cursor: pointer; color: red; }
@@ -46,6 +45,7 @@
   <h1 id="showTitle">Loading...</h1>
 
   <iframe id="videoPlayer" style="display: none;" allowfullscreen webkitallowfullscreen mozallowfullscreen allow="fullscreen"></iframe>
+  <div id="errorMessage">Failed to load the episode. Please try another.</div>
   
   <button id="nextButton">Next Episode</button>
 
@@ -118,7 +118,7 @@ function loadSeasons() {
 
 function loadEpisodes() {
   const season = document.getElementById('seasonSelect').value;
-  fetch(`https://vidsrc.wtf/api/1/tv/?id={tmdb_id}&s={season_number}&e={episode_number}&color={hexcolor}`)
+  fetch(`https://api.themoviedb.org/3/tv/${showId}/season/${season}?api_key=${apiKey}`)
     .then(res => res.json())
     .then(data => {
       currentEpisodeList = data.episodes;
@@ -150,12 +150,11 @@ function loadEpisodes() {
 function playEpisode(episodeNumber, season) {
   const iframe = document.getElementById('videoPlayer');
   const errorMessage = document.getElementById('errorMessage');
-  iframe.src = `https://vidsrc.wtf/api/1/tv/?id={tmdb_id}&s={season_number}&e={episode_number}&color={hexcolor}`;
+  iframe.src = `https://vidsrc.su/embed/tv/${showId}/${season}/${episodeNumber}`;
   iframe.style.display = 'block';
   errorMessage.style.display = 'none';
 
-  // Check for load failure
-  iframe.onload = function() {
+  iframe.onload = function () {
     try {
       const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
       if (!iframeDoc || iframeDoc.body.innerHTML.trim() === '') {
@@ -187,27 +186,3 @@ function loadRecommendations() {
       const recList = document.getElementById('recList');
       recList.innerHTML = '';
       data.results.forEach(rec => {
-        const poster = rec.poster_path
-          ? `https://image.tmdb.org/t/p/w200${rec.poster_path}`
-          : 'https://via.placeholder.com/200x300?text=No+Image';
-
-        const div = document.createElement('div');
-        div.className = 'rec-item';
-        div.innerHTML = `
-          <img src="${poster}" alt="${rec.name}">
-          <div class="rec-title">${rec.name}</div>
-        `;
-        div.onclick = () => {
-          window.location.href = `show.html?id=${rec.id}&name=${encodeURIComponent(rec.name)}`;
-        };
-        recList.appendChild(div);
-      });
-    });
-}
-
-loadSeasons();
-</script>
-
-</body>
-</html>
-

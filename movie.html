@@ -87,7 +87,8 @@
     const movieId = new URLSearchParams(window.location.search).get('id');
     const apiKey = '93843c8c295f5655a75d6361487e911a';
 
-    document.getElementById('movieIframe').src = `https://vidsrc.wtf/api/1/movie/?id={tmdb_id}&color={hexcolor}`;
+    // Set the iframe source using vidsrc.su
+    document.getElementById('movieIframe').src = `https://vidsrc.su/embed/movie/${movieId}`;
 
     function goBack() {
       window.location.href = 'index.html';

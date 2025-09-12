@@ -150,7 +150,7 @@ function loadEpisodes() {
 function playEpisode(episodeNumber, season) {
   const iframe = document.getElementById('videoPlayer');
   const errorMessage = document.getElementById('errorMessage');
-  iframe.src = `https://vidsrc.su/embed/tv/${showId}/${season}/${episodeNumber}`;
+  iframe.src = `https://vidsrc.me/embed/tv/${showId}/${season}/${episodeNumber}`;
   iframe.style.display = 'block';
   errorMessage.style.display = 'none';
 

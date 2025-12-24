@@ -68,7 +68,10 @@
       margin-top: 8px;
       font-size: 14px;
     }
-  </style>
+  
+#movieIframe{width:100%;height:80vh;background:black;border:none;}
+html,body{transform:none!important;filter:none!important;perspective:none!important;}
+</style>
 </head>
 <body>
   <header>
@@ -76,7 +79,9 @@
     <button onclick="goBack()">← Back to Home</button>
   </header>
 
-  <iframe id="movieIframe" allowfullscreen></iframe>
+  <iframe id="movieIframe" frameborder="0"
+ allow="autoplay; fullscreen; picture-in-picture"
+ allowfullscreen webkitallowfullscreen mozallowfullscreen referrerpolicy="no-referrer"></iframe>
 
   <div class="recommendations">
     <h2>Recommended Movies</h2>

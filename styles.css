@@ -1,6 +1,43 @@
-body{
-  padding: 25px;
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #0A0A0A;
+  color: #ffffff;
+  font-family: 'DM Sans', sans-serif;
 }
+
 .title {
-	color: #5C6AC4;
+  color: #FF0033;
+}
+
+/* Fullscreen Compatibility Rules */
+iframe:-webkit-full-screen {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+iframe:-moz-full-screen {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+iframe:fullscreen {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.video-container:fullscreen {
+  width: 100vw !important;
+  height: 100vh !important;
+  padding: 0 !important;
+  background: #000 !important;
+}
+
+/* Fullscreen player sizing */
+iframe:fullscreen, iframe:-webkit-full-screen {
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: none !important;
+  max-height: none !important;
+  border-radius: 0 !important;
 }

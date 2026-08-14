@@ -166,7 +166,33 @@
     .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
     input:checked + .slider { background-color: var(--primary); }
     input:checked + .slider:before { transform: translateX(20px); }
-  </style>
+  
+    /* Fullscreen Compatibility Fixes */
+    iframe:-webkit-full-screen { width: 100% !important; height: 100% !important; }
+    iframe:-moz-full-screen { width: 100% !important; height: 100% !important; }
+    iframe:fullscreen { width: 100% !important; height: 100% !important; }
+    .video-container:fullscreen { width: 100vw !important; height: 100vh !important; padding: 0 !important; background: #000; }
+  
+    .video-container { position: relative; }
+    .fullscreen-btn {
+      position: absolute; right: 75px; bottom: 55px; z-index: 20;
+      padding: 10px 16px; border: 1px solid rgba(255,255,255,.2);
+      border-radius: 8px; background: rgba(0,0,0,.75); color: #fff;
+      cursor: pointer; font: 600 13px/1 'DM Sans', sans-serif;
+      backdrop-filter: blur(8px);
+    }
+    .fullscreen-btn:hover { background: rgba(0,0,0,.95); }
+    .video-container:fullscreen {
+      width: 100vw !important; height: 100vh !important;
+      padding: 0 !important; margin: 0 !important; background: #000 !important;
+    }
+    .video-container:fullscreen iframe, .video-container iframe:fullscreen {
+      width: 100vw !important; height: 100vh !important;
+      max-width: none !important; max-height: none !important; border-radius: 0 !important;
+    }
+    .video-container:fullscreen .fullscreen-btn { right: 20px; bottom: 20px; }
+    @media (max-width: 768px) { .fullscreen-btn { right: 35px; bottom: 35px; padding: 9px 12px; } }
+</style>
 </head>
 <body>
 
@@ -186,7 +212,8 @@
   <h1 id="showTitle">Loading...</h1>
 
   <div class="video-container">
-    <iframe id="videoPlayer" frameborder="0" allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>
+    <iframe id="videoPlayer" frameborder="0" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe>
+    <button id="fullscreenBtn" class="fullscreen-btn" type="button" aria-label="Enter fullscreen" title="Fullscreen">⛶ Fullscreen</button>
   </div>
 
   <div class="player-controls">
@@ -422,6 +449,50 @@ function updateWatchlistBtnUI() {
 }
 
 loadSeasons();
+
+  // Robust fullscreen support for the embedded player.
+  (() => {
+    const iframe = document.getElementById('videoPlayer');
+    const container = iframe ? iframe.closest('.video-container') : null;
+    const button = document.getElementById('fullscreenBtn');
+    if (!iframe || !button) return;
+
+    const isFullscreen = () =>
+      document.fullscreenElement === iframe || document.fullscreenElement === container ||
+      document.webkitFullscreenElement === iframe || document.webkitFullscreenElement === container;
+
+    const updateFullscreenButton = () => {
+      const active = isFullscreen();
+      button.textContent = active ? '⛶ Exit fullscreen' : '⛶ Fullscreen';
+      button.setAttribute('aria-label', active ? 'Exit fullscreen' : 'Enter fullscreen');
+      button.title = active ? 'Exit fullscreen' : 'Fullscreen';
+    };
+
+    button.addEventListener('click', async (event) => {
+      event.preventDefault();
+      try {
+        if (isFullscreen()) {
+          if (document.exitFullscreen) await document.exitFullscreen();
+          else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        } else if (iframe.requestFullscreen) {
+          await iframe.requestFullscreen();
+        } else if (iframe.webkitRequestFullscreen) {
+          iframe.webkitRequestFullscreen();
+        } else if (container && container.requestFullscreen) {
+          await container.requestFullscreen();
+        } else if (container && container.webkitRequestFullscreen) {
+          container.webkitRequestFullscreen();
+        }
+      } catch (error) {
+        console.warn('Fullscreen request was rejected:', error);
+      }
+      updateFullscreenButton();
+    });
+
+    document.addEventListener('fullscreenchange', updateFullscreenButton);
+    document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
+    updateFullscreenButton();
+  })();
 </script>
 </body>
 </html>
